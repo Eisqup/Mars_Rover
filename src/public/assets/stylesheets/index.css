@@ -1,0 +1,101 @@
+/* -------------------  MOBILE  --------------------- */
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: Arial;
+  min-height: 100vh;
+  background-color: lightgray;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+footer {
+  background-color: lightgray;
+}
+
+#headerToolbar {
+  display: flex;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: lightblue;
+  padding: 10px 10px;
+  margin-bottom: 5px;
+}
+
+h2 {
+  width: 50%;
+  display: inline;
+  text-align: center;
+}
+
+
+#btnContainer {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.btn {
+  background-color: rgb(128, 184, 203);
+  display: table-cell;
+  width: 100%;
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+.btn:hover {
+  background-color: blue;
+}
+
+#containerData {
+  background-color: darkcyan;
+  width: 100%;
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+#containerGallery {
+  background-color: blueviolet;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.column {
+  flex: 25%;
+  max-width: 25%;
+  padding: 0 4px;
+}
+
+img {
+  vertical-align: middle;
+  width: 100%;
+  object-fit: contain
+}
+
+/* -------------------  TABLET  --------------------- */
+@media (min-width: 768px) {
+  /* use mobile */
+}
+
+/* -------------------  DESKTOP  -------------------- */
+
+@media (min-width: 1224px) {
+  /* use mobile */
+}
+
+/* -------------------  LARGE SCREENS  -------------- */
+
+@media (min-width: 1824px) {
+  /* use mobile */
+}

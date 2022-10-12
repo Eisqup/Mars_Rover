@@ -62,28 +62,27 @@ h2 {
   border: 1px solid black;
   border-radius: 5px;
   padding: 10px 0px;
+  margin-bottom: 5px;
 }
 
 #containerGallery {
-  background-color: blueviolet;
+  background-color: lightgray;
 }
 
 .row {
   display: flex;
   flex-wrap: wrap;
-  padding: 0 4px;
 }
 
 .column {
   flex: 25%;
   max-width: 25%;
-  padding: 0 4px;
 }
 
-img {
+#containerGallery img {
   vertical-align: middle;
+  height: 100%;
   width: 100%;
-  object-fit: contain
 }
 
 /* -------------------  TABLET  --------------------- */

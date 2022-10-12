@@ -1,8 +1,6 @@
 let store = {
-    user: { name: "Student" },
     dataFromAPI: "",
-    rovers: ["Curiosity", "Opportunity", "Spirit"],
-    openSide: { home: true, Curiosity: false, Opportunity: false, Spirit: false }
+    rovers: ["Curiosity", "Opportunity", "Spirit"]
 };
 
 // add our markup to the page
@@ -10,12 +8,12 @@ const root = document.getElementById("root");
 
 const updateStore = (store, newState) => {
     store = Object.assign(store, newState);
-    console.log(store);
-    //render(root, store);
+    render(root, store);
 };
 
 const render = async (root, state) => {
     root.innerHTML = App(state);
+    createBtnEventListener();
 };
 
 
@@ -35,14 +33,10 @@ const App = (state) => {
                 </div>
             </header>
             <div id="containerData">
-            ${containerData(state)}
+                ${createRoverData(state)}
             </div>
             <div id="containerGallery">
-                <div class="row">
-                    <div class="column">
-                        ImageOfTheDay(dataFromAPI)
-                    </div>
-                </div>
+                ${createRoverPhotos(state)}
             </div>
         </div>
     </main>
@@ -54,7 +48,13 @@ const App = (state) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
     render(root, store);
+});
 
+
+
+// ------------------------------------------------------  COMPONENTS
+
+const createBtnEventListener = () => {
     const btn1 = document.getElementById(store.rovers[0]);
     const btn2 = document.getElementById(store.rovers[1]);
     const btn3 = document.getElementById(store.rovers[2]);
@@ -70,19 +70,15 @@ window.addEventListener("load", () => {
     btn3.addEventListener("click", () => {
         getRoverData(store.rovers[2]);
     });
-});
+};
 
+const createRoverData = (state) => {
+    let { dataFromAPI } = state;
 
-
-// ------------------------------------------------------  COMPONENTS
-
-const containerData = (state) => {
-    let { dataFromAPI, openSide } = state;
-
-    if (openSide.home === true) {
+    if (!dataFromAPI) {
         return `
-        <h2>Hello 
-        ${state.user.name}
+        <h2>
+            Hello
         </h2>
         <p>
             Welcome to explore inforastions about the mars rovers.
@@ -93,42 +89,64 @@ const containerData = (state) => {
             Click on the buttons in the top to chose the Mars rover. :)
         </p>`;
     }
-
-    if (dataFromAPI) {
-        return `
-            <h1>Welcome, ${name}!</h1>
-        `;
-    }
+    return `<h2>${dataFromAPI.manifesto.name}</h2>
+            <p>This Rover was started at ${dataFromAPI.manifesto.launch_date} and landed on ${dataFromAPI.manifesto.landing_date} on the Mars.</p>
+            `;
 };
 
-// Example of a pure function that renders information requested from the backend
-const loadPhotos = (dataFromAPI) => {
-    return dataFromAPI;
+const createRoverPhotos = (state) => {
+
+    let { dataFromAPI } = state;
+
+    if (!dataFromAPI) {
+        return "";
+    }
+
+    let imgArray = dataFromAPI.photos.map((x, i, array) => {
+        let string = "";
+
+        if (i >= 100) {
+            return;
+        }
+
+        if (i === 0) {
+            string += "<div class=\"row\">";
+        }
+        if (i % 4 === 0 && i !== 0) {
+            string += "</div class=\"row\"><div class=\"row\">";
+        }
+
+        string += `<div class="column"><img src="${x.img_src}" alt=""></div>`;
+
+        if (i === array.length) {
+            string += "</div class=\"row\">";
+        }
+        return string;
+
+    }).join(" ");
+    return imgArray;
 };
 // ------------------------------------------------------  API CALL
 
 //API call
 
 /**
-* request data from Server return a array with 2 Objects
-* Rover Manifesto and Last Rover Photos
+* request data from Server return a array with 3 Objects
+* Rover Manifesto and Last 5 sol Rover Photos and time stamp
 */
 const getRoverData = (roverName) => {
 
     /**
      * don´t request API again if data from the rover already loaded
      */
-    if (store.dataFromAPI) {
-        if (store.dataFromAPI[0].photo_manifest.name == roverName) {
-            return;
-        }
+    if (store.dataFromAPI[roverName]) {
+        return;
     }
-    fetch("http://localhost:3000/rover?rover=" + roverName)
+    fetch(`http://localhost:3000/data?rover=${roverName}`)
         .then(res => res.json())
         .then(dataFromAPI => {
-            console.log(dataFromAPI);
             updateStore(store, { dataFromAPI });
+            console.log(store);
         });
-
     return;
 };

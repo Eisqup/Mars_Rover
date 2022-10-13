@@ -4,7 +4,6 @@ body {
   display: flex;
   flex-direction: column;
   font-family: Arial;
-  min-height: 100vh;
   background-color: lightgray;
 }
 
@@ -62,40 +61,60 @@ h2 {
 }
 
 #containerGallery {
-  background-color: lightgray;
+  box-sizing: border-box;
   display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.column {
-  flex: 25%;
-  max-width: 25%;
-  margin-bottom: 8%;
-}
-
-.column img {
-  height: 100%;
+#containerGallery>div {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: lightgrey;
+  display: inline-block;
+}
+
+#containerGallery img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
 
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
-  /* use mobile */
+  #containerGallery {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  #containerGallery img {
+    height: 260px;
+    object-fit: cover;
+  }
 }
 
 /* -------------------  DESKTOP  -------------------- */
 
 @media (min-width: 1224px) {
+  #containerGallery {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  #containerGallery img {
+    height: 320px;
+  }
+
   /* use mobile */
 }
 
 /* -------------------  LARGE SCREENS  -------------- */
 
 @media (min-width: 1824px) {
-  /* use mobile */
+  #containerGallery {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  #containerGallery img {
+    height: 400px;
+  }
 }

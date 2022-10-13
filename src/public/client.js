@@ -59,15 +59,16 @@ const createBtnRoverEventListener = (stats) => {
     [btn1, btn2, btn3].map((x, i) => {
         x.addEventListener("click", () => {
             getRoverData(rovers[i]);
-            loadingScreen(stats);
+            loadingScreen(stats, rovers[i]);
         });
     });
 };
 
-const loadingScreen = (state) => {
-    updateStore(state, { dataFromAPI: "loading" });
+const loadingScreen = (state, roverName) => {
+    updateStore(state, { dataFromAPI: ["loading", roverName] });
 
 };
+
 const createRoverData = (dataFromAPI) => {
 
     if (!dataFromAPI) {
@@ -85,8 +86,8 @@ const createRoverData = (dataFromAPI) => {
         </p>`;
     }
     //return loading for the loading screen
-    if (dataFromAPI == "loading") {
-        return dataFromAPI;
+    if (dataFromAPI[0] == "loading") {
+        return `${dataFromAPI[0]} data from ${dataFromAPI[1]}...`;
     }
     // returns the rover infomaitons
     return `<h2><u>${dataFromAPI.manifesto.name}</u></h2>
@@ -103,30 +104,21 @@ const createRoverData = (dataFromAPI) => {
 */
 const createRoverPhotos = (dataFromAPI) => {
 
-    if (!dataFromAPI || dataFromAPI == "loading") {
+    const maxPhotos = 200;
+
+    if (!dataFromAPI || dataFromAPI[0] == "loading") {
         return "";
     }
 
-    let imgArray = dataFromAPI.photos.map((x, i, array) => {
-        let string = "";
-
-        if (i >= 100) {
+    let imgArray = dataFromAPI.photos.map((x, i) => {
+        if (i >= maxPhotos) {
             return;
         }
-
-        if (i === 0) {
-            string += "<div class=\"row\">";
-        }
-        if (i % 4 === 0 && i !== 0) {
-            string += "</div class=\"row\"><div class=\"row\">";
-        }
-
-        string += `<div class="column"><img src="${x.img_src}" alt=""><span>Photo: ${x.earth_date}<br>Camera: ${x.camera.name}<br>Sol: ${x.sol}</span></div>`;
-
-        if (i === array.length) {
-            string += "</div class=\"row\">";
-        }
-        return string;
+        return `
+        <div class="row">
+        <img src="${x.img_src}" alt="">
+        <span>Date: ${x.earth_date}<br>Camera: ${x.camera.name}<br>Sol: ${x.sol}<br>ID: ${x.id}</span>
+        </div>`;
 
     }).join(" ");
 

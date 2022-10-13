@@ -5,3 +5,4 @@ node_modules
 .eslintrc.js
 yarn.lock
 package.json
+package-lock.json

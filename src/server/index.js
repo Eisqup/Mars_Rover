@@ -17,19 +17,21 @@ app.use("/", express.static(path.join(__dirname, "../public")));
 app.get("/data", async (req, res) => {
 
     let roverName = req.query.rover;
+    let minPhotosCount = 200;
 
     try {
 
+        //Fetch the manifesto Data from Rover
         let manifesto = await fetch(`https://api.nasa.gov/mars-photos/api/v1/manifests/${roverName}/?api_key=${process.env.API_KEY}`)
             .then(res => res.json()).then(res => res.photo_manifest);
 
 
-        //create a array with sol number we have to go back to get min 200 pictures    
+        //create a array with sol number we have to go back to get min 200 pictures from the rover  
         let solNumbersToGoBackArray = manifesto.photos.reverse().reduce((x, c, i, a) => {
             if (i + 1 == a.length) {
                 return x.array;
             }
-            if (x.count > 200) {
+            if (x.count > minPhotosCount) {
                 return { count: x.count, sol: x.sol, array: x.array };
             }
             x.array.push(c.sol);
@@ -47,6 +49,7 @@ app.get("/data", async (req, res) => {
 
         let date = new Date().toDateString();
 
+        //send data back
         res.send({ photos: photos, manifesto: manifesto, timeStamp: date });
 
     } catch (err) {

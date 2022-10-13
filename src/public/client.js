@@ -11,19 +11,16 @@ const updateStore = (store, newState) => {
     render(root, store);
 };
 
-const render = async (root, state) => {
+const render = (root, state) => {
     root.innerHTML = App(state);
-    createBtnEventListener();
 };
 
 
 // create content
 const App = (state) => {
-    let { rovers } = state;
+    let { rovers, dataFromAPI } = state;
 
     return `
-    <main>
-        <div id="root">
             <header id="headerToolbar">
                 <h2>Mars Rover</h2>
                 <div id="btnContainer">
@@ -33,47 +30,45 @@ const App = (state) => {
                 </div>
             </header>
             <div id="containerData">
-                ${createRoverData(state)}
+                ${createRoverData(dataFromAPI)}
             </div>
             <div id="containerGallery">
-                ${createRoverPhotos(state)}
+                ${createRoverPhotos(dataFromAPI)}
             </div>
-        </div>
-    </main>
         <footer>
-        from Steven</footer>
+        from Steven
+        </footer>
     `;
 };
 
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
     render(root, store);
+    createBtnRoverEventListener(store);
 });
-
-
 
 // ------------------------------------------------------  COMPONENTS
 
-const createBtnEventListener = () => {
-    const btn1 = document.getElementById(store.rovers[0]);
-    const btn2 = document.getElementById(store.rovers[1]);
-    const btn3 = document.getElementById(store.rovers[2]);
+const createBtnRoverEventListener = (stats) => {
+    let { rovers } = stats;
 
+    const btn1 = document.getElementById(rovers[0]);
+    const btn2 = document.getElementById(rovers[1]);
+    const btn3 = document.getElementById(rovers[2]);
 
-
-    btn1.addEventListener("click", () => {
-        getRoverData(store.rovers[0]);
-    });
-    btn2.addEventListener("click", () => {
-        getRoverData(store.rovers[1]);
-    });
-    btn3.addEventListener("click", () => {
-        getRoverData(store.rovers[2]);
+    [btn1, btn2, btn3].map((x, i) => {
+        x.addEventListener("click", () => {
+            getRoverData(rovers[i]);
+            loadingScreen(stats);
+        });
     });
 };
 
-const createRoverData = (state) => {
-    let { dataFromAPI } = state;
+const loadingScreen = (state) => {
+    updateStore(state, { dataFromAPI: "loading" });
+
+};
+const createRoverData = (dataFromAPI) => {
 
     if (!dataFromAPI) {
         return `
@@ -81,24 +76,34 @@ const createRoverData = (state) => {
             Hello
         </h2>
         <p>
-            Welcome to explore inforastions about the mars rovers.
+            Welcome to explore the information's about the Mars rovers.
         </p>
         <p>
-            I prevent some kex inforastions and photos for u on this side.
+            I will prevent you some key information´s and the current 200 photos.
         </p>
-            Click on the buttons in the top to chose the Mars rover. :)
+            Click on the buttons in the top to choose the Mars rover. :)
         </p>`;
     }
-    return `<h2>${dataFromAPI.manifesto.name}</h2>
-            <p>This Rover was started at ${dataFromAPI.manifesto.launch_date} and landed on ${dataFromAPI.manifesto.landing_date} on the Mars.</p>
-            `;
+    //return loading for the loading screen
+    if (dataFromAPI == "loading") {
+        return dataFromAPI;
+    }
+    // returns the rover infomaitons
+    return `<h2><u>${dataFromAPI.manifesto.name}</u></h2>
+    <p>This Rover was started at ${dataFromAPI.manifesto.launch_date} and landed on ${dataFromAPI.manifesto.landing_date} on the Mars.</p>
+    <p>Last day of records is ${dataFromAPI.manifesto.max_date} which are overall ${dataFromAPI.manifesto.max_sol} sol.</p>
+    <p>Staus is ${dataFromAPI.manifesto.status} and I toke ${dataFromAPI.manifesto.total_photos} photos.</p>
+    `;
 };
 
-const createRoverPhotos = (state) => {
+/** 
+ * Create a string with a column and row pattern 
+ * to display the Photos from the rover (4 Photos per row)
+ * if dataFromApi is empty it return nothing
+*/
+const createRoverPhotos = (dataFromAPI) => {
 
-    let { dataFromAPI } = state;
-
-    if (!dataFromAPI) {
+    if (!dataFromAPI || dataFromAPI == "loading") {
         return "";
     }
 
@@ -116,7 +121,7 @@ const createRoverPhotos = (state) => {
             string += "</div class=\"row\"><div class=\"row\">";
         }
 
-        string += `<div class="column"><img src="${x.img_src}" alt=""></div>`;
+        string += `<div class="column"><img src="${x.img_src}" alt=""><span>Photo: ${x.earth_date}<br>Camera: ${x.camera.name}<br>Sol: ${x.sol}</span></div>`;
 
         if (i === array.length) {
             string += "</div class=\"row\">";
@@ -124,29 +129,32 @@ const createRoverPhotos = (state) => {
         return string;
 
     }).join(" ");
+
     return imgArray;
 };
+
 // ------------------------------------------------------  API CALL
-
-//API call
-
 /**
-* request data from Server return a array with 3 Objects
-* Rover Manifesto and Last 5 sol Rover Photos and time stamp
-*/
+ * request data from Server return a array with 3 Object
+ * -Rover Manifesto with key information´s
+ * -Array of Photos with min 200 current Photos
+ * -Timestamp
+ */
 const getRoverData = (roverName) => {
 
     /**
      * don´t request API again if data from the rover already loaded
      */
-    if (store.dataFromAPI[roverName]) {
-        return;
+    if (store.dataFromAPI) {
+        if (store.dataFromAPI.manifesto.name == [roverName]) {
+            return;
+        }
     }
     fetch(`http://localhost:3000/data?rover=${roverName}`)
         .then(res => res.json())
         .then(dataFromAPI => {
             updateStore(store, { dataFromAPI });
-            console.log(store);
+            createBtnRoverEventListener(store);
         });
     return;
 };

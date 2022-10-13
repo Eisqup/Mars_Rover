@@ -36,7 +36,7 @@ app.get("/data", async (req, res) => {
             return { count: x.count += c.total_photos, sol: c.sol, array: x.array };
         }, { count: 0, sol: 0, array: [] });
 
-        // fetch each infomaitons from the sol number in the array after it create one array with each photo as object
+        // fetch each infomaitons from the sol number in the array. After it change the array so its just one long array with all photos objects
         let photos = (await Promise.all(solNumbersToGoBackArray.map(x =>
             fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${roverName}/photos?sol=${x}&api_key=${process.env.API_KEY}`)
                 .then(res => res.json())

@@ -8,10 +8,6 @@ body {
   background-color: lightgray;
 }
 
-main {
-  flex: 1;
-  padding: 20px;
-}
 
 footer {
   background-color: lightgray;
@@ -67,6 +63,7 @@ h2 {
 
 #containerGallery {
   background-color: lightgray;
+  display: grid;
 }
 
 .row {
@@ -77,13 +74,14 @@ h2 {
 .column {
   flex: 25%;
   max-width: 25%;
+  margin-bottom: 8%;
 }
 
-#containerGallery img {
-  vertical-align: middle;
+.column img {
   height: 100%;
   width: 100%;
 }
+
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {

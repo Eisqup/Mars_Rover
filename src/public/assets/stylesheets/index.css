@@ -63,7 +63,7 @@ h2 {
 #containerGallery {
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
 
 #containerGallery>div {
@@ -76,7 +76,7 @@ h2 {
 
 #containerGallery img {
   width: 100%;
-  height: 200px;
+  height: 250px;
   object-fit: cover;
 }
 
@@ -84,11 +84,11 @@ h2 {
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
   #containerGallery {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   #containerGallery img {
-    height: 260px;
+    height: 350px;
     object-fit: cover;
   }
 }
@@ -97,11 +97,11 @@ h2 {
 
 @media (min-width: 1224px) {
   #containerGallery {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 
   #containerGallery img {
-    height: 320px;
+    height: 420px;
   }
 
   /* use mobile */
@@ -111,10 +111,10 @@ h2 {
 
 @media (min-width: 1824px) {
   #containerGallery {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 
   #containerGallery img {
-    height: 400px;
+    height: 500px;
   }
 }

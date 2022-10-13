@@ -1,22 +1,22 @@
 //Key infomaitons
-let store = {
-    dataFromAPI: "",
-    rovers: ["Curiosity", "Opportunity", "Spirit"]
-};
-console.log(store);
+const store = Immutable.Map({
+    dataFromAPI: null,
+    rovers: Immutable.List(["Curiosity", "Opportunity", "Spirit"])
+});
 
 // add our markup to the page
 const root = document.getElementById("root");
 
 //update Store data
-const updateStore = (store, newState) => {
-    store = Object.assign(store, newState);
-    render(root, store);
+const updateStore = (storeOld, newState) => {
+    const updatedStore = store.merge(storeOld, newState);
+    render(root, updatedStore);
+    return;
 };
 
 // render the UI of the App
 const render = (root, state) => {
-    root.innerHTML = App(state);
+    root.innerHTML = App(state.toJS());
 };
 
 
@@ -28,9 +28,7 @@ const App = (state) => {
             <header id="headerToolbar">
                 <h2>Mars Rover</h2>
                 <div id="btnContainer">
-                    <div class="btn" id=${rovers[0]}>${rovers[0]}</div>
-                    <div class="btn" id=${rovers[1]}>${rovers[1]}</div>
-                    <div class="btn" id=${rovers[2]}>${rovers[2]}</div>
+                    ${createRoverButtons(rovers)}
                 </div>
             </header>
             <div id="containerData">
@@ -48,10 +46,16 @@ const App = (state) => {
 // listening for load event because page should load before any JS is called
 window.addEventListener("load", () => {
     render(root, store);
-    createBtnRoverEventListener(store);
+    createBtnRoverEventListener(store.toJS());
 });
 
 // ------------------------------------------------------  COMPONENTS
+
+const createRoverButtons = function (rovers){
+    return rovers.map(x => {
+        return `<div class="btn" id=${x}>${x}</div>`;
+    }).join(" ");
+};
 
 //create buttons for the event and the functions which has to run after clicking
 const createBtnRoverEventListener = (stats) => {
@@ -127,19 +131,21 @@ const createRoverPhotos = (dataFromAPI) => {
     }
 
     //create a string with all needed Photos in a div container which hast the img and a spin with infomaitons in it
-    let imgArray = dataFromAPI.photos.map((x, i) => {
+    return dataFromAPI.photos.map((x, i) => {
         if (i >= maxPhotos) {
             return;
         }
-        return `
-        <div>
-        <img src="${x.img_src}" alt="">
-        <span>Date: ${x.earth_date}<br>Camera: ${x.camera.name}<br>Sol: ${x.sol}<br>ID: ${x.id}</span>
-        </div>`;
+        return createPhotosHTMLElements(x);
 
     }).join(" ");
+};
 
-    return imgArray;
+const createPhotosHTMLElements = (photoObject) => {
+    return `
+        <div>
+        <img src="${photoObject.img_src}" alt="">
+        <span>Date: ${photoObject.earth_date}<br>Camera: ${photoObject.camera.name}<br>Sol: ${photoObject.sol}<br>ID: ${photoObject.id}</span>
+        </div>`;
 };
 
 // ------------------------------------------------------  API CALL
@@ -149,7 +155,7 @@ const createRoverPhotos = (dataFromAPI) => {
  * -Array of Photos with min 200 current Photos
  * -Timestamp
  * 
- * return data for the loading screen
+ * return data for the loading screen UI
  */
 const getRoverData = (stats, roverName) => {
 
